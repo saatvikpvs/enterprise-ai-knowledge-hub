@@ -1,5 +1,5 @@
 # --- Web interface ---
-streamlit==1.38.0
+streamlit==1.49.0
 
 # --- RAG / LLM orchestration ---
 langchain==0.3.7
