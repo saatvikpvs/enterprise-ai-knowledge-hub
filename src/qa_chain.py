@@ -55,6 +55,13 @@ RAG_PROMPT = ChatPromptTemplate.from_messages([
      "instead of guessing or using outside knowledge. "
      "Be concise and factual. When useful, quote key figures or terms "
      "directly from the context.\n\n"
+     "'I could not find this information in the uploaded documents.'\n\n"
+"At the end of your response, write:\n"
+"SOURCES_USED: [comma separated excerpt numbers]\n\n"
+"Example:\n"
+"SOURCES_USED: 2,4\n\n"
+"If no source was used, write:\n"
+"SOURCES_USED: NONE\n\n"
      "CONTEXT:\n{context}"),
     # MessagesPlaceholder inserts the running conversation history here,
     # so the model can resolve pronouns/follow-ups like "what about them?"
@@ -189,14 +196,37 @@ def answer_question(question: str, chat_history: list):
         "chat_history": history_messages,
         "question": question,
     })
-    NO_ANSWER_PHRASE = "I could not find this information in the uploaded documents"
 
+    used_chunks = []
+
+    if "SOURCES_USED:" in answer_text:
+        answer_only, source_part = answer_text.split("SOURCES_USED:", 1)
+        answer_text = answer_only.strip()
+        source_part = source_part.strip()
+
+        if source_part.upper() != "NONE":
+            try:
+                indices = [
+                    int(x.strip()) - 1
+                    for x in source_part.split(",")
+                ]
+
+                for idx in indices:
+                    if 0 <= idx < len(retrieved_chunks):
+                        used_chunks.append(retrieved_chunks[idx])
+            except ValueError:
+                used_chunks = []
+    else:
+        used_chunks = retrieved_chunks
+
+    NO_ANSWER_PHRASE = "I could not find this information in the uploaded documents"
     if NO_ANSWER_PHRASE.lower() in answer_text.lower():
-     return {
-        "answer": answer_text,
-        "sources": [],
-    }
+        return {
+            "answer": answer_text,
+            "sources": [],
+        }
+
     return {
         "answer": answer_text,
-        "sources": retrieved_chunks,
+        "sources": used_chunks,
     }

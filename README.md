@@ -182,18 +182,8 @@ Good smoke tests using the included sample documents:
 That last test confirms the grounding/anti-hallucination behavior is
 working — the app should refuse to answer from general knowledge.
 
-## 13. Common errors and fixes
 
-| Error | Cause | Fix |
-|---|---|---|
-| `GOOGLE_API_KEY is not set` (shown in UI) | `.env` missing or empty | Re-check step 6/7 |
-| `google.api_core.exceptions.PermissionDenied` | Invalid/expired API key | Generate a new key at AI Studio |
-| `ModuleNotFoundError: No module named 'langchain_google_genai'` | Dependencies not installed / wrong venv active | Re-run `pip install -r requirements.txt` inside the activated venv |
-| Upload succeeds but answers say "I could not find this information" for something that IS in the document | Chunk didn't retrieve top-K, or file failed to parse | Check the "Processing log" in the sidebar for a load error; try re-uploading |
-| `unstructured` install fails on Windows | Missing C++ build tools | Install "Build Tools for Visual Studio", then retry |
-| Streamlit opens but the page is blank/errors on first load | An exception occurred before rendering | Check the terminal running `streamlit run app.py` for the Python traceback |
-
-## 14. Adding more document types later
+## 13. Adding more document types later
 
 To support a new format (say, `.csv` or `.pptx`):
 
@@ -207,7 +197,7 @@ To support a new format (say, `.csv` or `.pptx`):
 Because every other module works with the generic LangChain `Document`
 object (not format-specific logic), no other file needs to change.
 
-## 15. Improving retrieval quality
+## 14. Improving retrieval quality
 
 - **Tune chunk size/overlap** in `config.py` — smaller chunks (e.g. 500)
   give more precise citations; larger chunks (e.g. 1500) preserve more
@@ -225,7 +215,7 @@ object (not format-specific logic), no other file needs to change.
   product codes or ticket numbers, which embeddings alone can struggle
   to match precisely.
 
-## 16. Deploying the application
+## 15. Deploying the application
 
 - **Streamlit Community Cloud** (simplest): push this repo to GitHub,
   connect it at https://share.streamlit.io, and add `GOOGLE_API_KEY` as a
