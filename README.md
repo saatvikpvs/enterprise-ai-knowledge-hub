@@ -6,30 +6,28 @@ Retrieval-Augmented Generation (RAG): it retrieves the most relevant
 passages from a ChromaDB vector store and asks Gemini to answer using only
 that retrieved context — with source citations for every answer.
 
-## Folder structure
+# Live Demo
 
-```
-enterprise-ai-knowledge-hub/
-├── app.py                     # Streamlit UI — the app's front door
-├── config.py                  # All tunable settings in one place
-├── requirements.txt
-├── .env.example
-├── README.md
-├── src/
-│   ├── document_loader.py     # PDF/DOCX/TXT/MD/HTML -> plain text
-│   ├── text_splitter.py       # plain text -> small retrieval chunks
-│   ├── vector_store.py        # embeddings + ChromaDB read/write
-│   ├── qa_chain.py            # retrieval + prompt + LLM + memory
-│   └── utils.py                # small UI-layer helper functions
-├── data/
-│   ├── sample_docs/            # ready-to-use sample enterprise documents
-│   ├── uploaded_docs/          # files uploaded via the UI land here
-│   └── chroma_db/               # persisted vector database (auto-created)
-└── diagrams/
-    ├── architecture.svg
-    └── rag_pipeline.svg
-```
+The application has been successfully deployed on Streamlit Community Cloud.
 
+## Live Application:
+
+https://enterprise-ai-knowledge-app-yqczd3zvonwis9gsjlzfh7.streamlit.app/
+
+You can directly open the above link in any web browser to try the application without installing anything.
+
+### How to test
+Open the application using the link above.
+Upload one or more supported documents:
+  PDF
+  DOCX
+  TXT
+  Markdown
+  HTML
+  Click Process Documents.
+  Ask questions about the uploaded documents.
+The application retrieves relevant information using Retrieval-Augmented Generation (RAG) and displays the answer along with the supporting source citations.
+ 
 ## How it works (one paragraph)
 
 When you upload a document, it's parsed into plain text, split into
@@ -44,120 +42,61 @@ See `diagrams/architecture.svg` and `diagrams/rag_pipeline.svg` for visual
 walkthroughs, and read the docstring at the top of every file in `src/`
 for a detailed, beginner-friendly explanation of what it does and why.
 
----
+## Running the Project Locally
 
-## 1. Software to install
-
-- **Python 3.10 or 3.11** (recommended — `unstructured` and `chromadb`
-  can have issues on very new Python versions like 3.13; 3.10/3.11 is the
-  safest choice).
-- **Git** (optional, only if you want to version-control the project).
-- A code editor such as VS Code.
-
-Check your Python version:
+### 1. Clone the Repository
 
 ```bash
-python --version
-```
-
-## 2. Create a virtual environment
-
-A virtual environment keeps this project's dependencies isolated from
-other Python projects on your machine.
-
-```bash
+git clone https://github.com/saatvikpvs/enterprise-ai-knowledge-hub
 cd enterprise-ai-knowledge-hub
-python -m venv venv
 ```
 
-## 3. Activate the virtual environment
+### 2. Create a Virtual Environment
 
-**Windows (PowerShell):**
+**Windows**
+
 ```bash
+python -m venv venv
 venv\Scripts\activate
 ```
 
-**Windows (cmd.exe):**
-```bash
-venv\Scripts\activate.bat
-```
+**macOS / Linux**
 
-**Mac / Linux:**
 ```bash
+python3 -m venv venv
 source venv/bin/activate
 ```
 
-You'll know it worked because your terminal prompt will now start with
-`(venv)`.
-
-## 4. Install dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-This installs Streamlit, LangChain, ChromaDB, the Gemini integration, and
-the document-parsing libraries (pypdf, docx2txt, unstructured).
+### 4. Configure the Gemini API Key
 
-> If `unstructured` fails to install on Windows, install the "Build Tools
-> for Visual Studio" (C++ build tools) first, then re-run pip install.
+Create a `.env` file in the project root and add:
 
-## 5. Get a Gemini API key
-
-1. Go to https://aistudio.google.com/app/apikey
-2. Sign in with a Google account.
-3. Click "Create API key" and copy the generated key.
-
-Gemini currently offers a free tier that's sufficient for testing this
-project.
-
-## 6. Create the `.env` file
-
-Copy the example file:
-
-```bash
-# Mac/Linux
-cp .env.example .env
-
-# Windows
-copy .env.example .env
+```text
+GOOGLE_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
-## 7. Configure environment variables
-
-Open `.env` in your editor and paste your key:
-
-```
-GOOGLE_API_KEY=AIzaSy...your_real_key...
-```
-
-Save the file. `config.py` automatically loads this at startup via
-`python-dotenv` — you never need to type your key into any code file.
-
-## 8. ChromaDB setup
-
-No separate server needed — this project uses ChromaDB in **embedded /
-persistent mode**, meaning it runs inside the same Python process as the
-Streamlit app and simply saves its data to `data/chroma_db/` on disk.
-There is nothing extra to start or configure.
-
-## 9. Launch the application
+### 5. Launch the Application
 
 ```bash
 streamlit run app.py
 ```
 
-This opens your browser automatically at `http://localhost:8501`. If it
-doesn't, open that URL manually.
+Open the application in your browser:
 
-## 10. Upload documents
+```
+http://localhost:8501
+```
 
-- Use the sidebar's **"Upload documents"** widget.
-- Try the ready-made sample files in `data/sample_docs/`:
-  `hr_leave_policy.txt`, `it_security_policy.md`, `product_faq.html`.
-- Click **"Process Documents"** and wait for the success message.
+The application is now ready to use. Upload supported documents (PDF, DOCX, TXT, Markdown, or HTML), process them, and ask natural-language questions about their contents.
+---
 
-## 11. Ask questions
+##  Ask questions
 
 Type a question in the chat box at the bottom, for example:
 
@@ -168,7 +107,7 @@ Type a question in the chat box at the bottom, for example:
 Expand **"📎 Sources"** under each answer to see exactly which
 document/page the answer came from.
 
-## 12. Test the application
+##  Test the application
 
 Good smoke tests using the included sample documents:
 
@@ -183,7 +122,7 @@ That last test confirms the grounding/anti-hallucination behavior is
 working — the app should refuse to answer from general knowledge.
 
 
-## 13. Adding more document types later
+## Adding more document types later
 
 To support a new format (say, `.csv` or `.pptx`):
 
@@ -197,7 +136,7 @@ To support a new format (say, `.csv` or `.pptx`):
 Because every other module works with the generic LangChain `Document`
 object (not format-specific logic), no other file needs to change.
 
-## 14. Improving retrieval quality
+## Improving retrieval quality
 
 - **Tune chunk size/overlap** in `config.py` — smaller chunks (e.g. 500)
   give more precise citations; larger chunks (e.g. 1500) preserve more
@@ -215,21 +154,7 @@ object (not format-specific logic), no other file needs to change.
   product codes or ticket numbers, which embeddings alone can struggle
   to match precisely.
 
-## 15. Deploying the application
 
-- **Streamlit Community Cloud** (simplest): push this repo to GitHub,
-  connect it at https://share.streamlit.io, and add `GOOGLE_API_KEY` as a
-  "secret" in the app settings instead of committing a `.env` file.
-- **Docker**: write a `Dockerfile` that copies the project, runs
-  `pip install -r requirements.txt`, and starts with
-  `CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]`,
-  then deploy the container to any cloud provider (Render, Railway, AWS
-  ECS, etc.).
-- For production/enterprise use, consider swapping the local persisted
-  ChromaDB for a hosted vector database (e.g. Chroma Cloud, Pinecone, or
-  pgvector) so multiple app instances can share one knowledge base.
-
----
 
 ## Concepts explained
 
