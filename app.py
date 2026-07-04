@@ -69,6 +69,25 @@ if "processing_log" not in st.session_state:
     st.session_state.processing_log = []
 
 
+def render_sources(sources):
+    """
+    Render retrieved source chunks without showing the same citation text
+    repeatedly when overlapping chunks return near-identical previews.
+    """
+    seen = set()
+    for chunk in sources:
+        label = format_source_label(chunk)
+        preview = chunk.page_content[:300]
+        dedupe_key = (label, " ".join(preview.split()).lower())
+
+        if dedupe_key in seen:
+            continue
+
+        seen.add(dedupe_key)
+        st.markdown(f"**{label}**")
+        st.caption(preview + ("..." if len(chunk.page_content) > 300 else ""))
+
+
 # ---------------------------------------------------------------------------
 # SIDEBAR: DOCUMENT UPLOAD + MANAGEMENT
 # ---------------------------------------------------------------------------
@@ -179,14 +198,7 @@ for turn in st.session_state.chat_history:
         # show them in a collapsible section underneath the answer.
         if turn["role"] == "assistant" and turn.get("sources"):
             with st.expander("📎 Sources"):
-                for chunk in turn["sources"]:
-                    label = format_source_label(chunk)
-                    st.markdown(f"**{label}**")
-                    # Show a short preview of the chunk text so the user
-                    # can verify the answer without opening the original
-                    # file.
-                    preview = chunk.page_content[:300]
-                    st.caption(preview + ("..." if len(chunk.page_content) > 300 else ""))
+                render_sources(turn["sources"])
 
 # st.chat_input renders a text box pinned to the bottom of the page. It
 # returns None on every re-run EXCEPT the one right after the user submits
@@ -213,13 +225,7 @@ if question:
 
                 if result["sources"]:
                     with st.expander("📎 Sources"):
-                        for chunk in result["sources"]:
-                            label = format_source_label(chunk)
-                            st.markdown(f"**{label}**")
-                            preview = chunk.page_content[:300]
-                            st.caption(
-                                preview + ("..." if len(chunk.page_content) > 300 else "")
-                            )
+                        render_sources(result["sources"])
 
         # 3. Save the assistant's turn (including sources) into history so
         #    it persists across re-runs and future follow-up questions.
