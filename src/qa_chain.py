@@ -189,7 +189,13 @@ def answer_question(question: str, chat_history: list):
         "chat_history": history_messages,
         "question": question,
     })
+    NO_ANSWER_PHRASE = "I could not find this information in the uploaded documents"
 
+    if NO_ANSWER_PHRASE.lower() in answer_text.lower():
+     return {
+        "answer": answer_text,
+        "sources": [],
+    }
     return {
         "answer": answer_text,
         "sources": retrieved_chunks,
