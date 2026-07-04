@@ -52,6 +52,7 @@ st.set_page_config(
     page_title="Enterprise AI Knowledge Hub",
     page_icon="📚",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # ---------------------------------------------------------------------------
