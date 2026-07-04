@@ -107,4 +107,9 @@ CHROMA_COLLECTION_NAME = "enterprise_knowledge_hub"
 SUPPORTED_EXTENSIONS = [".pdf", ".docx", ".txt", ".md", ".html", ".htm"]
 
 # Read the Gemini API key from the environment (loaded from .env above).
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+import streamlit as st
+
+GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
+
+if not GOOGLE_API_KEY:
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
